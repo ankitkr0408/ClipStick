@@ -55,7 +55,19 @@ Access history, toggle folder screenshot watchers, pause capture, or configure b
 
 ---
 
-## Requirements
+## 🔒 Privacy & Data Safety: 100% Local, Zero Cloud
+
+Your clipboard contains your most sensitive data — passwords, credentials, personal chats, and private source code. 
+
+**ClipStick is designed with privacy-first architecture:**
+
+- **Zero Cloud Sync**: Nothing is ever uploaded to the cloud or external servers. Your clips never leave your Mac.
+- **Zero Telemetry or Analytics**: There are no tracking scripts, analytics SDKs, or background telemetry pings.
+- **Stored Exclusively on Your Machine**: Metadata and history live inside a local SQLite database on your Mac (`~/Library/Application Support/`), and images are cached locally on your disk.
+- **Works 100% Offline**: Turn off Wi-Fi completely — every feature (capture, search, markup, crop, OCR, and stitching) functions with zero internet access.
+- **Fully Open-Source & Auditable**: You don't have to take our word for it — the complete source code is public and transparent right here. Feel free to inspect the network calls (or lack thereof!).
+
+---
 
 - macOS 14.0 (Sonoma) or later
 - Apple Silicon or Intel Mac
