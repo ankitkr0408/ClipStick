@@ -4,8 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-APP="build/ClipCoard.app"
-BIN="build/ClipCoard"
+APP="build/ClipStick.app"
+BIN="build/ClipStick"
 mkdir -p build
 
 if ( swift build -c release ) >/dev/null 2>&1; then
@@ -26,15 +26,15 @@ fi
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/ClipCoard"
+cp "$BIN" "$APP/Contents/MacOS/ClipStick"
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-    <key>CFBundleName</key><string>ClipCoard</string>
-    <key>CFBundleDisplayName</key><string>ClipCoard</string>
-    <key>CFBundleIdentifier</key><string>dev.clipcoard.app</string>
-    <key>CFBundleExecutable</key><string>ClipCoard</string>
+    <key>CFBundleName</key><string>ClipStick</string>
+    <key>CFBundleDisplayName</key><string>ClipStick</string>
+    <key>CFBundleIdentifier</key><string>dev.clipstick.app</string>
+    <key>CFBundleExecutable</key><string>ClipStick</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleVersion</key><string>1</string>
     <key>CFBundleShortVersionString</key><string>0.1.0</string>
@@ -42,10 +42,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
     <key>NSDesktopFolderUsageDescription</key>
-    <string>ClipCoard imports new screenshots saved to your Desktop so you can annotate and batch them.</string>
+    <string>ClipStick imports new screenshots saved to your Desktop so you can annotate and batch them.</string>
     <key>NSDocumentsFolderUsageDescription</key>
-    <string>ClipCoard imports new screenshots saved to your Documents folder.</string>
+    <string>ClipStick imports new screenshots saved to your Documents folder.</string>
 </dict></plist>
 PLIST
 codesign --force --sign - "$APP" >/dev/null 2>&1 || true
-echo "Built $APP"
+(cd build && zip -rq "ClipStick-v0.1.0-macOS.zip" "ClipStick.app")
+echo "Built $APP and build/ClipStick-v0.1.0-macOS.zip"

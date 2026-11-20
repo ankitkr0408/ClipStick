@@ -62,9 +62,30 @@ Access history, toggle folder screenshot watchers, pause capture, or configure b
 
 ---
 
-## Installation & Build
+## Installation
 
-### Build from Source
+### Method 1: Direct Download (Easiest — No Terminal Needed ⭐️)
+
+1. Download **`ClipStick-v0.1.0-macOS.zip`** from the **[Releases page](https://github.com/ankitkr0408/ClipStick/releases)**.
+2. Double-click the downloaded `.zip` file to extract `ClipStick.app`.
+3. Drag **`ClipStick.app`** into your **`Applications`** folder.
+4. Double-click to open! Look for the clipboard icon in your macOS menu bar.
+
+> **Note for first launch:** Since ClipStick is an independent open-source project, macOS Gatekeeper may show a security prompt. Simply **Right-Click (or Control-Click) `ClipStick.app` → Open → Click "Open"**.
+
+---
+
+### Method 2: One-Line Terminal Install
+
+Copy and paste this single command into your macOS Terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/scripts/install.sh | bash
+```
+
+---
+
+### Method 3: Build from Source (For Developers)
 
 ```bash
 git clone https://github.com/ankitkr0408/ClipStick.git
@@ -72,15 +93,7 @@ cd ClipStick
 ./scripts/install.sh
 ```
 
-The script compiles the application and installs `ClipStick.app` into your `/Applications` directory.
-
-### Quick Build (Binary only)
-
-```bash
-./scripts/build.sh
-```
-
-The compiled application bundle will be located at `build/ClipStick.app`.
+The script compiles the application and automatically installs `ClipStick.app` into your `/Applications` directory.
 
 ---
 
