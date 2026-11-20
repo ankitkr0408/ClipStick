@@ -1,6 +1,6 @@
 # ClipStick
 
-A lightweight, native macOS clipboard manager built in Swift and SwiftUI, designed for developer workflows, bug analysis, and visual debugging.
+A lightweight, native macOS clipboard manager built in Swift and SwiftUI, designed for developer workflows, visual debugging, and AI bug analysis.
 
 [![macOS](https://img.shields.io/badge/platform-macOS%2014%2B-blue.svg)](https://apple.com/macos)
 [![Swift](https://img.shields.io/badge/swift-5.9%2B-orange.svg)](https://swift.org)
@@ -8,11 +8,35 @@ A lightweight, native macOS clipboard manager built in Swift and SwiftUI, design
 
 ---
 
+<p align="center">
+  <img src="assets/clipboard-grid.jpg" alt="ClipStick Floating HUD" width="850">
+</p>
+
+---
+
 ## Why ClipStick?
 
 When debugging code or reproducing UI issues, developers often take multiple screenshots in rapid succession alongside copying logs and error traces. Default clipboards only keep the latest item.
 
-**ClipStick** runs in the background, automatically tracks all captures locally, and lets you batch-select multiple screenshots to merge or export directly into AI prompts (Claude, ChatGPT) or GitHub issues.
+**ClipStick** runs silently in the background, automatically tracks all captures locally, and lets you batch-select multiple screenshots to merge or export directly into AI prompts (Claude, ChatGPT) or GitHub issues.
+
+---
+
+## Visual Tour
+
+### Multi-Item Selection & 1-Click Stitching
+Select multiple screenshots with numbered click-order badges, and merge them into a single clean collage ready for bug reports or LLMs:
+
+<p align="center">
+  <img src="assets/batch-stitch.jpg" alt="Batch Selection and Stitching" width="850">
+</p>
+
+### Native macOS Menu Bar Controls
+Access history, toggle folder screenshot watchers, pause capture, or configure background text recognition (OCR) with one click:
+
+<p align="center">
+  <img src="assets/menu-bar.jpg" alt="Menu Bar Controls" width="450">
+</p>
 
 ---
 
