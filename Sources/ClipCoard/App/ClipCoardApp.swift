@@ -59,22 +59,22 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(withTitle: "Open Data Folder", action: #selector(openData), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Clear History…", action: #selector(clearHistory), keyEquivalent: "").target = self
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit ClipCoard", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: "Quit ClipStick", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
 
         item.menu = menu
-        item.button?.toolTip = "ClipCoard"
+        item.button?.toolTip = "ClipStick"
         updateIcon()
     }
 
     func updateIcon() {
         let name = Preferences.capturePaused ? "pause.circle" : "doc.on.clipboard"
-        let image = NSImage(systemSymbolName: name, accessibilityDescription: "ClipCoard")
+        let image = NSImage(systemSymbolName: name, accessibilityDescription: "ClipStick")
         image?.isTemplate = true
         item.button?.image = image
     }
 
     func menuWillOpen(_ menu: NSMenu) {
-        showItem.title = "Show ClipCoard" + (app.hotkeyLabel.isEmpty ? "" : "    \(app.hotkeyLabel)")
+        showItem.title = "Show ClipStick" + (app.hotkeyLabel.isEmpty ? "" : "    \(app.hotkeyLabel)")
         pauseItem.state = Preferences.capturePaused ? .on : .off
         watchItem.state = Preferences.watchScreenshots ? .on : .off
         ocrItem.state = Preferences.ocrEnabled ? .on : .off

@@ -9,8 +9,10 @@ DEST_DIR="/Applications"
 [ -w "$DEST_DIR" ] || { DEST_DIR="$HOME/Applications"; mkdir -p "$DEST_DIR"; }
 DEST="$DEST_DIR/ClipStick.app"
 
-pkill -x ClipStick 2>/dev/null || pkill -x ClipCoard 2>/dev/null || true
+pkill -x ClipCoard 2>/dev/null || true
+pkill -x ClipStick 2>/dev/null || true
 sleep 0.5
+rm -rf "$DEST_DIR/ClipCoard.app"
 rm -rf "$DEST"
 cp -R build/ClipStick.app "$DEST"
 open "$DEST"

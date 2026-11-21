@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             storage = try StorageService()
         } catch {
             let alert = NSAlert(error: error)
-            alert.messageText = "ClipCoard can't start"
+            alert.messageText = "ClipStick can't start"
             alert.runModal()
             NSApp.terminate(nil)
             return
@@ -124,7 +124,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let appItem = NSMenuItem()
         main.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Quit ClipCoard", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit ClipStick", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
 
         let editItem = NSMenuItem()
