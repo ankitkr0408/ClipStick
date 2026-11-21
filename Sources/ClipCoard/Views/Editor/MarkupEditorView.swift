@@ -76,11 +76,20 @@ final class AnnotationCanvasView: NSView, NSTextFieldDelegate {
     override var isFlipped: Bool { true }
     override var mouseDownCanMoveWindow: Bool { false }
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
-    override func resetCursorRects() { addCursorRect(bounds, cursor: .crosshair) }
+    override func resetCursorRects() {
+        discardCursorRects()
+        if vm.tool == .eraser {
+            let cursor = NSCursor(image: NSImage(systemSymbolName: "eraser", accessibilityDescription: nil) ?? NSImage(), hotSpot: NSPoint(x: 4, y: 12))
+            addCursorRect(bounds, cursor: cursor)
+        } else {
+            addCursorRect(bounds, cursor: .crosshair)
+        }
+    }
     override func setFrameSize(_ newSize: NSSize) { super.setFrameSize(newSize); needsDisplay = true }
 
     func refresh() {
         if vm.tool != .text { commitText() }
+        window?.invalidateCursorRects(for: self)
         needsDisplay = true
     }
 
@@ -191,10 +200,13 @@ final class AnnotationCanvasView: NSView, NSTextFieldDelegate {
         switch vm.tool {
         case .crop:
             beginCrop(at: p)
+        case .eraser:
+            guard inside else { return }
+            erase(at: p)
         case .marker, .pen:
             guard inside else { return }
             inProgress = Annotation(kind: vm.tool == .pen ? .pen : .marker, color: vm.color, points: [norm(p)])
-        case .arrow, .rectangle, .redact, .pixelate:
+        case .arrow, .rectangle, .square, .circle, .triangle, .redact, .pixelate:
             guard inside, let kind = vm.tool.annotationKind else { return }
             let n = norm(p)
             inProgress = Annotation(kind: kind, color: vm.color, points: [n, n])
@@ -211,6 +223,7 @@ final class AnnotationCanvasView: NSView, NSTextFieldDelegate {
     override func mouseDragged(with event: NSEvent) {
         let p = convert(event.locationInWindow, from: nil)
         if vm.tool == .crop { updateCrop(to: p); needsDisplay = true; return }
+        if vm.tool == .eraser { erase(at: p); return }
         guard var a = inProgress else { return }
         let n = norm(p)
         let f = fit
@@ -221,6 +234,20 @@ final class AnnotationCanvasView: NSView, NSTextFieldDelegate {
             } else if let last = a.points.last, hypot((n.x - last.x) * f.width, (n.y - last.y) * f.height) > 1.5 {
                 a.points.append(n)
             }
+        case .square:
+            let dx = n.x - a.points[0].x, dy = n.y - a.points[0].y
+            let side = max(abs(dx), abs(dy))
+            let sx: CGFloat = dx < 0 ? -1 : 1, sy: CGFloat = dy < 0 ? -1 : 1
+            a.points[1] = CGPoint(x: a.points[0].x + sx * side, y: a.points[0].y + sy * side)
+        case .rectangle, .circle:
+            if event.modifierFlags.contains(.shift) {
+                let dx = n.x - a.points[0].x, dy = n.y - a.points[0].y
+                let side = max(abs(dx), abs(dy))
+                let sx: CGFloat = dx < 0 ? -1 : 1, sy: CGFloat = dy < 0 ? -1 : 1
+                a.points[1] = CGPoint(x: a.points[0].x + sx * side, y: a.points[0].y + sy * side)
+            } else {
+                a.points[1] = n
+            }
         default:
             a.points[1] = n
         }
@@ -230,6 +257,7 @@ final class AnnotationCanvasView: NSView, NSTextFieldDelegate {
 
     override func mouseUp(with event: NSEvent) {
         if vm.tool == .crop { endCrop(); return }
+        if vm.tool == .eraser { return }
         guard let a = inProgress else { return }
         inProgress = nil
         let f = fit
@@ -244,6 +272,73 @@ final class AnnotationCanvasView: NSView, NSTextFieldDelegate {
         }
         if keep { vm.add(a) }
         needsDisplay = true
+    }
+
+    // MARK: Eraser
+
+    private func erase(at p: CGPoint) {
+        let f = fit
+        guard f.width > 0, f.height > 0 else { return }
+        for (index, a) in vm.state.annotations.enumerated().reversed() {
+            if hitTest(annotation: a, point: p, fit: f) {
+                var updated = vm.state.annotations
+                updated.remove(at: index)
+                vm.commit(EditState(annotations: updated, crop: vm.state.crop))
+                needsDisplay = true
+                break
+            }
+        }
+    }
+
+    private func hitTest(annotation a: Annotation, point p: CGPoint, fit f: CGRect) -> Bool {
+        let tolerance: CGFloat = 16
+
+        func pt(_ norm: CGPoint) -> CGPoint {
+            CGPoint(x: f.minX + norm.x * f.width, y: f.minY + norm.y * f.height)
+        }
+
+        func distToSegment(_ p: CGPoint, _ a: CGPoint, _ b: CGPoint) -> CGFloat {
+            let dx = b.x - a.x, dy = b.y - a.y
+            let len2 = dx * dx + dy * dy
+            if len2 == 0 { return hypot(p.x - a.x, p.y - a.y) }
+            let t = max(0, min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2))
+            return hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy))
+        }
+
+        switch a.kind {
+        case .pen, .marker:
+            let pts = a.points.map(pt)
+            guard pts.count >= 2 else {
+                return pts.first.map { hypot(p.x - $0.x, p.y - $0.y) <= (a.kind == .marker ? 24 : tolerance) } ?? false
+            }
+            let tol = a.kind == .marker ? 24.0 : tolerance
+            for i in 0..<(pts.count - 1) {
+                if distToSegment(p, pts[i], pts[i + 1]) <= tol { return true }
+            }
+            return false
+
+        case .arrow:
+            guard a.points.count >= 2 else { return false }
+            let p0 = pt(a.points[0]), p1 = pt(a.points[1])
+            return distToSegment(p, p0, p1) <= tolerance || hypot(p.x - p1.x, p.y - p1.y) <= 24
+
+        case .rectangle, .square, .circle, .triangle, .redact, .pixelate:
+            let r = CGRect(x: f.minX + a.rect.minX * f.width,
+                           y: f.minY + a.rect.minY * f.height,
+                           width: a.rect.width * f.width,
+                           height: a.rect.height * f.height)
+            return r.insetBy(dx: -tolerance, dy: -tolerance).contains(p)
+
+        case .badge:
+            guard let first = a.points.first else { return false }
+            return hypot(p.x - pt(first).x, p.y - pt(first).y) <= 22
+
+        case .text:
+            guard let first = a.points.first else { return false }
+            let o = pt(first)
+            let r = CGRect(x: o.x - 5, y: o.y - 5, width: 140, height: 40)
+            return r.contains(p)
+        }
     }
 
     // MARK: Crop

@@ -70,6 +70,13 @@ enum SelfTest {
         if let multi, let p = pixel(multi, x: 609, y: 120) { check(p.r > 240 && p.g > 120 && p.g < 190 && p.b < 60, "badge fill (orange) drawn at (0.5, 0.2)", "rgb \(p.r),\(p.g),\(p.b)") }
         if let multi, let p = pixel(multi, x: 120 + 4, y: 420 + 4) { check(p.b > 200 && p.r < 60, "text callout background (cyan) drawn at (0.1, 0.7)", "rgb \(p.r),\(p.g),\(p.b)") }
 
+        // Test square, circle, triangle rendering
+        let square = Annotation(kind: .square, color: .red, points: [CGPoint(x: 0.1, y: 0.1), CGPoint(x: 0.4, y: 0.4)])
+        let circle = Annotation(kind: .circle, color: .green, points: [CGPoint(x: 0.5, y: 0.1), CGPoint(x: 0.8, y: 0.4)])
+        let triangle = Annotation(kind: .triangle, color: .orange, points: [CGPoint(x: 0.2, y: 0.5), CGPoint(x: 0.6, y: 0.9)])
+        let shapesRendered = ImageProcessingService.render(original: big, state: EditState(annotations: [square, circle, triangle], crop: nil))
+        check(shapesRendered != nil, "square, circle, triangle render successfully")
+
         let json = try? JSONEncoder().encode(state)
         check(json.flatMap { try? JSONDecoder().decode(EditState.self, from: $0) } == state, "EditState JSON round-trip")
 

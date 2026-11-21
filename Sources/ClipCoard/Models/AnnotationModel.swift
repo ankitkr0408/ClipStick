@@ -2,16 +2,20 @@ import AppKit
 import CoreGraphics
 
 enum AnnotationTool: String, CaseIterable, Identifiable {
-    case crop, marker, pen, arrow, rectangle, redact, pixelate, text, badge
+    case crop, eraser, marker, pen, arrow, rectangle, square, circle, triangle, text, badge, redact, pixelate
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .crop: "Crop"
+        case .eraser: "Eraser"
         case .marker: "Marker"
         case .pen: "Pen"
         case .arrow: "Arrow"
         case .rectangle: "Box"
+        case .square: "Square"
+        case .circle: "Circle"
+        case .triangle: "Triangle"
         case .redact: "Redact"
         case .pixelate: "Pixelate"
         case .text: "Text"
@@ -22,10 +26,14 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var symbol: String {
         switch self {
         case .crop: "crop"
+        case .eraser: "eraser"
         case .marker: "highlighter"
         case .pen: "pencil.tip"
         case .arrow: "arrow.up.right"
         case .rectangle: "rectangle"
+        case .square: "square"
+        case .circle: "circle"
+        case .triangle: "triangle"
         case .redact: "eye.slash.fill"
         case .pixelate: "checkerboard.rectangle"
         case .text: "textformat"
@@ -36,10 +44,14 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var hint: String {
         switch self {
         case .crop: "Drag to crop · handles resize · drag inside to move"
+        case .eraser: "Click or drag over annotations to erase them"
         case .marker: "Drag over code lines to highlight. Hold ⇧ for a straight line."
         case .pen: "Draw freehand. Hold ⇧ for a straight line."
         case .arrow: "Drag from the tail to the point of interest."
         case .rectangle: "Drag to outline a defect."
+        case .square: "Drag to draw a 1:1 square."
+        case .circle: "Drag to draw a circle or oval."
+        case .triangle: "Drag to draw a triangle."
         case .redact: "Drag over secrets — painted solid black, unrecoverable."
         case .pixelate: "Drag to pixelate a region. Prefer Redact for tokens and keys."
         case .text: "Click to place a callout, then type. ↩ to confirm."
@@ -49,11 +61,14 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
 
     var annotationKind: Annotation.Kind? {
         switch self {
-        case .crop: nil
+        case .crop, .eraser: nil
         case .marker: .marker
         case .pen: .pen
         case .arrow: .arrow
         case .rectangle: .rectangle
+        case .square: .square
+        case .circle: .circle
+        case .triangle: .triangle
         case .redact: .redact
         case .pixelate: .pixelate
         case .text: .text
@@ -95,7 +110,7 @@ enum AnnotationColor: String, Codable, CaseIterable, Identifiable {
 /// One drawn mark. Coordinates are normalised (0…1) to the *original* image so the same
 /// annotation renders identically in the editor and in the full-resolution export.
 struct Annotation: Codable, Identifiable, Hashable {
-    enum Kind: String, Codable { case pen, marker, arrow, rectangle, redact, pixelate, text, badge }
+    enum Kind: String, Codable { case pen, marker, arrow, rectangle, square, circle, triangle, redact, pixelate, text, badge }
 
     var id = UUID()
     var kind: Kind

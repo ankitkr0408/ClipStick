@@ -232,6 +232,35 @@ enum AnnotationRenderer {
             ctx.addPath(CGPath(roundedRect: r, cornerWidth: min(3 * u, r.width / 2), cornerHeight: min(3 * u, r.height / 2), transform: nil))
             ctx.strokePath()
 
+        case .square:
+            var r = scaled(a.rect)
+            let side = min(r.width, r.height)
+            r = CGRect(x: r.minX, y: r.minY, width: side, height: side)
+            ctx.setStrokeColor(a.color.cgColor())
+            ctx.setLineWidth(3.5 * u)
+            ctx.setLineJoin(.round)
+            ctx.addPath(CGPath(roundedRect: r, cornerWidth: min(3 * u, r.width / 2), cornerHeight: min(3 * u, r.height / 2), transform: nil))
+            ctx.strokePath()
+
+        case .circle:
+            let r = scaled(a.rect)
+            ctx.setStrokeColor(a.color.cgColor())
+            ctx.setLineWidth(3.5 * u)
+            ctx.strokeEllipse(in: r)
+
+        case .triangle:
+            let r = scaled(a.rect)
+            ctx.setStrokeColor(a.color.cgColor())
+            ctx.setLineWidth(3.5 * u)
+            ctx.setLineJoin(.round)
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: r.midX, y: r.minY))
+            path.addLine(to: CGPoint(x: r.maxX, y: r.maxY))
+            path.addLine(to: CGPoint(x: r.minX, y: r.maxY))
+            path.closeSubpath()
+            ctx.addPath(path)
+            ctx.strokePath()
+
         case .redact:
             ctx.setFillColor(CGColor(gray: 0, alpha: 1))
             ctx.fill(scaled(a.rect))

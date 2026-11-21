@@ -6,20 +6,20 @@ struct ToolPaletteView: View {
     let onCancel: () -> Void
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 3) {
             ForEach(AnnotationTool.allCases) { tool in
                 Button { vm.tool = tool } label: {
-                    HStack(spacing: 4) {
+                    HStack(spacing: 3) {
                         Image(systemName: tool.symbol)
-                            .font(.system(size: 13, weight: .medium))
-                        if tool == .redact || tool == .crop || vm.tool == tool {
+                            .font(.system(size: 12, weight: .medium))
+                        if tool == .redact || vm.tool == tool {
                             Text(tool.title)
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.system(size: 10.5, weight: .semibold))
                         }
                     }
-                    .padding(.horizontal, (tool == .redact || tool == .crop || vm.tool == tool) ? 8 : 6)
+                    .padding(.horizontal, (tool == .redact || vm.tool == tool) ? 7 : 5)
                     .frame(height: 28)
-                    .background(RoundedRectangle(cornerRadius: 7).fill(vm.tool == tool ? Color.accentColor : (tool == .redact ? Color.red.opacity(0.12) : Color.primary.opacity(0.05))))
+                    .background(RoundedRectangle(cornerRadius: 6).fill(vm.tool == tool ? Color.accentColor : (tool == .redact ? Color.red.opacity(0.12) : Color.primary.opacity(0.06))))
                     .foregroundStyle(vm.tool == tool ? Color.white : (tool == .redact ? Color.red : Color.primary))
                 }
                 .buttonStyle(.plain)
