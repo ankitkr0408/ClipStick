@@ -9,6 +9,16 @@ A lightweight, native macOS clipboard manager built in Swift and SwiftUI, design
 ---
 
 <p align="center">
+  <a href="https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/downloads/ClipStick.zip">
+    <img src="https://img.shields.io/badge/⬇️%20Download%20ClipStick%20for%20Mac%20(370%20KB)-007AFF?style=for-the-badge&logo=apple&logoColor=white" alt="Download ClipStick">
+  </a>
+  <br/>
+  <sub><b>No Xcode, No Terminal, No Setup required.</b> Just download, unzip, and drag to Applications!</sub>
+</p>
+
+---
+
+<p align="center">
   <img src="assets/clipboard-grid.jpg" alt="ClipStick Floating HUD" width="850">
 </p>
 
