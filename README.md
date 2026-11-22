@@ -69,43 +69,58 @@ Your clipboard contains your most sensitive data — passwords, credentials, per
 
 ---
 
+## Requirements
+
 - macOS 14.0 (Sonoma) or later
 - Apple Silicon or Intel Mac
 
 ---
 
-## Installation
+## 🚀 Installation Guide
 
-### Method 1: Direct Download (Easiest — No Terminal Needed ⭐️)
+Choose the method that works best for you:
 
-1. Download **`ClipStick-v0.1.0-macOS.zip`** from the **[Releases page](https://github.com/ankitkr0408/ClipStick/releases)**.
-2. Double-click the downloaded `.zip` file to extract `ClipStick.app`.
-3. Drag **`ClipStick.app`** into your **`Applications`** folder.
-4. Double-click to open! Look for the clipboard icon in your macOS menu bar.
+### Option 1: 1-Click Fast Install (Recommended ⭐️)
 
-> **Note for first launch:** Since ClipStick is an independent open-source project, macOS Gatekeeper may show a security prompt. Simply **Right-Click (or Control-Click) `ClipStick.app` → Open → Click "Open"**.
-
----
-
-### Method 2: One-Line Terminal Install
-
-Copy and paste this single command into your macOS Terminal:
+Open **Terminal** on your Mac (`Cmd + Space` → type `Terminal` → press Enter), paste this single line, and hit **Enter**:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/scripts/install.sh | bash
 ```
 
+*This automatically downloads, builds, installs `ClipStick.app` into your `/Applications` folder, and launches it in your menu bar. Done!*
+
 ---
 
-### Method 3: Build from Source (For Developers)
+### Option 2: If you downloaded the ZIP from GitHub (`ClipStick-main.zip`)
+
+If you clicked GitHub's green **`<> Code` → "Download ZIP"** button and extracted the folder:
+
+1. Open the extracted **`ClipStick-main`** folder in Finder.
+2. Simply **Double-Click on `Install.command`**!
+3. That's it! It will automatically build and install ClipStick into your `/Applications` folder.
+
+*(Alternatively, in Terminal, run: `cd ~/Downloads/ClipStick-main && ./scripts/install.sh`)*
+
+---
+
+### Option 3: Pre-built App (Zero Terminal)
+
+1. Download **`ClipStick-v0.1.0-macOS.zip`** from the **[Releases page](https://github.com/ankitkr0408/ClipStick/releases)**.
+2. Double-click the downloaded `.zip` file to extract `ClipStick.app`.
+3. Drag **`ClipStick.app`** into your **`Applications`** folder and open it!
+
+> **Note on first launch:** Since ClipStick is an independent open-source project, macOS Gatekeeper may show an "unidentified developer" prompt. Simply **Right-Click (or Control-Click) `ClipStick.app` → Open → Click "Open"**.
+
+---
+
+### Option 4: Clone & Build (For Developers)
 
 ```bash
 git clone https://github.com/ankitkr0408/ClipStick.git
 cd ClipStick
 ./scripts/install.sh
 ```
-
-The script compiles the application and automatically installs `ClipStick.app` into your `/Applications` directory.
 
 ---
 
