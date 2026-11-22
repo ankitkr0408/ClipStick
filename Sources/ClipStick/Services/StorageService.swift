@@ -8,14 +8,14 @@ enum StorageError: Error, LocalizedError {
     case sql(String)
     var errorDescription: String? {
         switch self {
-        case .open(let m): "Could not open the ClipCoard database: \(m)"
+        case .open(let m): "Could not open the ClipStick database: \(m)"
         case .sql(let m): "Database error: \(m)"
         }
     }
 }
 
 /// SQLite metadata store + on-disk blob manager.
-/// Layout: `~/Library/Application Support/ClipCoard/{clipcoard.sqlite, blobs/, thumbs/, exports/}`.
+/// Layout: `~/Library/Application Support/ClipStick/{clipstick.sqlite, blobs/, thumbs/, exports/}`.
 final class StorageService: @unchecked Sendable {
     let rootURL: URL
     let blobsURL: URL
@@ -32,9 +32,13 @@ final class StorageService: @unchecked Sendable {
         """
 
     init(rootURL: URL? = nil) throws {
-        let root = rootURL ?? FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("ClipCoard", isDirectory: true)
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let newRoot = appSupport.appendingPathComponent("ClipStick", isDirectory: true)
+        let oldRoot = appSupport.appendingPathComponent("ClipCoard", isDirectory: true)
+        if !FileManager.default.fileExists(atPath: newRoot.path) && FileManager.default.fileExists(atPath: oldRoot.path) {
+            try? FileManager.default.moveItem(at: oldRoot, to: newRoot)
+        }
+        let root = rootURL ?? newRoot
         self.rootURL = root
         blobsURL = root.appendingPathComponent("blobs", isDirectory: true)
         thumbsURL = root.appendingPathComponent("thumbs", isDirectory: true)
@@ -43,7 +47,18 @@ final class StorageService: @unchecked Sendable {
             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
 
-        let path = root.appendingPathComponent("clipcoard.sqlite").path
+        let oldDb = root.appendingPathComponent("clipcoard.sqlite")
+        let newDb = root.appendingPathComponent("clipstick.sqlite")
+        if FileManager.default.fileExists(atPath: oldDb.path) && !FileManager.default.fileExists(atPath: newDb.path) {
+            try? FileManager.default.moveItem(at: oldDb, to: newDb)
+            let oldWal = root.appendingPathComponent("clipcoard.sqlite-wal")
+            let newWal = root.appendingPathComponent("clipstick.sqlite-wal")
+            try? FileManager.default.moveItem(at: oldWal, to: newWal)
+            let oldShm = root.appendingPathComponent("clipcoard.sqlite-shm")
+            let newShm = root.appendingPathComponent("clipstick.sqlite-shm")
+            try? FileManager.default.moveItem(at: oldShm, to: newShm)
+        }
+        let path = newDb.path
         guard sqlite3_open(path, &db) == SQLITE_OK else {
             throw StorageError.open(String(cString: sqlite3_errmsg(db)))
         }
@@ -174,14 +189,14 @@ final class StorageService: @unchecked Sendable {
         lock.lock(); defer { lock.unlock() }
         var s: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &s, nil) == SQLITE_OK, let s else {
-            NSLog("ClipCoard SQL prepare failed: %@", String(cString: sqlite3_errmsg(db)))
+            NSLog("ClipStick SQL prepare failed: %@", String(cString: sqlite3_errmsg(db)))
             return false
         }
         defer { sqlite3_finalize(s) }
         bind(s)
         let rc = sqlite3_step(s)
         if rc != SQLITE_DONE && rc != SQLITE_ROW {
-            NSLog("ClipCoard SQL step failed: %@", String(cString: sqlite3_errmsg(db)))
+            NSLog("ClipStick SQL step failed: %@", String(cString: sqlite3_errmsg(db)))
             return false
         }
         return true
@@ -191,7 +206,7 @@ final class StorageService: @unchecked Sendable {
         lock.lock(); defer { lock.unlock() }
         var s: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &s, nil) == SQLITE_OK, let s else {
-            NSLog("ClipCoard SQL prepare failed: %@", String(cString: sqlite3_errmsg(db)))
+            NSLog("ClipStick SQL prepare failed: %@", String(cString: sqlite3_errmsg(db)))
             return []
         }
         defer { sqlite3_finalize(s) }

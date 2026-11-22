@@ -2,7 +2,7 @@ import AppKit
 
 @main
 @MainActor
-enum ClipCoardApp {
+enum ClipStickApp {
     static func main() {
         if CommandLine.arguments.contains("--selftest") {
             exit(SelfTest.run())

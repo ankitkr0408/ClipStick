@@ -1,6 +1,6 @@
 import AppKit
 
-/// `ClipCoard --selftest` — headless checks for storage, ingest/dedup, stitching, annotation rendering and OCR.
+/// `ClipStick --selftest` — headless checks for storage, ingest/dedup, stitching, annotation rendering and OCR.
 @MainActor
 enum SelfTest {
     private static var failures = 0
@@ -11,7 +11,7 @@ enum SelfTest {
     }
 
     static func run() -> Int32 {
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent("clipcoard-selftest-\(UUID().uuidString)")
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("clipstick-selftest-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }
 
         // --- Storage + ingest + dedup

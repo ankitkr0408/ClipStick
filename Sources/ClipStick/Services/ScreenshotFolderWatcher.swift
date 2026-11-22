@@ -26,7 +26,7 @@ final class ScreenshotFolderWatcher {
         guard source == nil else { return }
         let fd = open(directory.path, O_EVTONLY)
         guard fd >= 0 else {
-            NSLog("ClipCoard: cannot watch %@ (permission?)", directory.path)
+            NSLog("ClipStick: cannot watch %@ (permission?)", directory.path)
             return
         }
         // Existing files are not "new screenshots".

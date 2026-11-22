@@ -1,13 +1,13 @@
 import AppKit
 import SwiftUI
 
-/// `ClipCoard --snapshot <dir>` — renders the HUD and the editor offscreen to PNGs (no screen-recording permission needed).
+/// `ClipStick --snapshot <dir>` — renders the HUD and the editor offscreen to PNGs (no screen-recording permission needed).
 @MainActor
 enum Snapshot {
     static func run(outputDir: String) -> Int32 {
         let out = URL(fileURLWithPath: outputDir, isDirectory: true)
         try? FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent("clipcoard-snap-\(UUID().uuidString)")
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("clipstick-snap-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }
         guard let storage = try? StorageService(rootURL: root) else { return 1 }
 

@@ -56,7 +56,7 @@ final class PasteboardMonitor {
         timer = t
     }
 
-    /// Call after ClipCoard itself writes to the pasteboard so the write isn't re-captured.
+    /// Call after ClipStick itself writes to the pasteboard so the write isn't re-captured.
     func syncChangeCount() { lastChangeCount = NSPasteboard.general.changeCount }
 
     private func poll() {
@@ -71,7 +71,7 @@ final class PasteboardMonitor {
         let isSelf = front?.processIdentifier == ProcessInfo.processInfo.processIdentifier
         onCapture?(CaptureDraft(
             payload: payload,
-            sourceApp: isSelf ? "ClipCoard" : front?.localizedName,
+            sourceApp: isSelf ? "ClipStick" : front?.localizedName,
             sourceBundleID: isSelf ? nil : front?.bundleIdentifier
         ))
     }

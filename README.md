@@ -1,4 +1,8 @@
-# ClipStick
+<p align="center">
+  <img src="assets/logo.png" alt="ClipStick Logo" width="128" height="128">
+  <br/>
+  <h1 align="center">ClipStick</h1>
+</p>
 
 A lightweight, native macOS clipboard manager built in Swift and SwiftUI, designed for developer workflows, visual debugging, and AI bug analysis.
 

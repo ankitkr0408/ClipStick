@@ -154,7 +154,7 @@ final class ClipboardViewModel: ObservableObject {
             }.value
             guard let png else { notice = "Could not stitch those images"; return }
             writer.writeImage(png: png)
-            ingest.ingest(CaptureDraft(payload: .imageData(png), title: "Stitched · \(images.count) screenshots", sourceApp: "ClipCoard"))
+            ingest.ingest(CaptureDraft(payload: .imageData(png), title: "Stitched · \(images.count) screenshots", sourceApp: "ClipStick"))
             clearSelection()
             dismiss()
         }

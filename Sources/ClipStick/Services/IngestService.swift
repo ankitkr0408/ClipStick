@@ -20,9 +20,9 @@ struct CaptureDraft {
 /// Background pipeline: hash → dedup → blob + thumbnail → SQLite → OCR. Results are published on the main queue.
 final class IngestService: @unchecked Sendable {
     private let storage: StorageService
-    private let queue = DispatchQueue(label: "clipcoard.ingest", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "clipstick.ingest", qos: .userInitiated)
     /// OCR is the heaviest step and nobody waits on it, so it runs at utility QoS (efficiency cores).
-    private let ocrQueue = DispatchQueue(label: "clipcoard.ocr", qos: .utility)
+    private let ocrQueue = DispatchQueue(label: "clipstick.ocr", qos: .utility)
 
     /// Called on the main thread whenever a clip is inserted, bumped or updated. Set once at startup.
     var onUpsert: (@MainActor (ClipItem) -> Void)?

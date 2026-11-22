@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "ClipCoard",
+    name: "ClipStick",
     platforms: [.macOS(.v14)],
     targets: [
         .executableTarget(
-            name: "ClipCoard",
-            path: "Sources/ClipCoard",
+            name: "ClipStick",
+            path: "Sources/ClipStick",
             linkerSettings: [.linkedLibrary("sqlite3")]
         )
     ]

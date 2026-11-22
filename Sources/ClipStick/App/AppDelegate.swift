@@ -68,7 +68,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
         } catch {
-            NSLog("ClipCoard: launch-at-login change failed: %@", error.localizedDescription)
+            NSLog("ClipStick: launch-at-login change failed: %@", error.localizedDescription)
         }
     }
 

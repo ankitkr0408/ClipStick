@@ -35,7 +35,7 @@ final class GlobalHotkeyService {
                 return true
             }
         }
-        NSLog("ClipCoard: could not register a global hotkey")
+        NSLog("ClipStick: could not register a global hotkey")
         return false
     }
 

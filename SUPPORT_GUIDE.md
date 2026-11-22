@@ -101,14 +101,14 @@ It runs at native speed on both architectures with zero emulation required.
 
 #### Clear History & Data:
 - Click the ClipStick menu bar icon → **Clear History…**
-- Or click **Open Data Folder** to view local files (`~/Library/Application Support/ClipCoard/`).
+- Or click **Open Data Folder** to view local files (`~/Library/Application Support/ClipStick/`).
 
 #### Uninstall:
 1. Quit ClipStick: Click the menu bar icon → **Quit ClipStick** (`Cmd + Q`).
 2. Drag `ClipStick.app` from your `/Applications` folder to the **Trash**.
 3. *(Optional)* Delete user data folder:
    ```bash
-   rm -rf ~/Library/Application\ Support/ClipCoard
+   rm -rf ~/Library/Application\ Support/ClipStick
    ```
 
 ---

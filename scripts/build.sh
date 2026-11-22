@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Builds ClipCoard.app. Prefers SwiftPM; falls back to swiftc when SwiftPM is unusable
+# Builds ClipStick.app. Prefers SwiftPM; falls back to swiftc when SwiftPM is unusable
 # (e.g. a Command Line Tools install whose swift-package doesn't match its SDK).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 APP="build/ClipStick.app"
 BIN="build/ClipStick"
-mkdir -p build
+mkdir -p build downloads
 
 if ( swift build -c release ) >/dev/null 2>&1; then
-    cp "$(swift build -c release --show-bin-path)/ClipCoard" "$BIN"
+    cp "$(swift build -c release --show-bin-path)/ClipStick" "$BIN"
 else
     echo "SwiftPM unavailable — compiling with swiftc"
     # Pick the newest SDK whose Swift version the compiler can read.
@@ -38,6 +38,9 @@ fi
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/ClipStick"
+if [ -f "assets/AppIcon.icns" ]; then
+    cp "assets/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+fi
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -49,6 +52,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleVersion</key><string>1</string>
     <key>CFBundleShortVersionString</key><string>0.1.0</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
@@ -60,4 +64,5 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 PLIST
 codesign --force --sign - "$APP" >/dev/null 2>&1 || true
 (cd build && zip -rq "ClipStick-v0.1.0-macOS.zip" "ClipStick.app")
-echo "Built $APP and build/ClipStick-v0.1.0-macOS.zip"
+cp "build/ClipStick-v0.1.0-macOS.zip" "downloads/ClipStick.zip"
+echo "Built $APP, build/ClipStick-v0.1.0-macOS.zip, and downloads/ClipStick.zip"
