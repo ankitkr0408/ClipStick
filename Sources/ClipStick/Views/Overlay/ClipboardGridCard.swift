@@ -83,6 +83,13 @@ struct ClipboardGridCard: View {
             if let name = item.thumbName ?? item.displayBlobName {
                 ThumbnailView(url: vm.storage.thumbURL(name))
             } else { Image(systemName: "photo").font(.largeTitle).foregroundStyle(.tertiary) }
+        case .video where item.thumbName != nil:
+            ThumbnailView(url: vm.storage.thumbURL(item.thumbName!))
+                .overlay(alignment: .bottomLeading) {
+                    Label(item.renderedBlobName != nil ? "GIF" : "MP4", systemImage: "play.fill")
+                        .font(.system(size: 9, weight: .bold)).padding(.horizontal, 6).padding(.vertical, 3)
+                        .background(Capsule().fill(.black.opacity(0.65))).foregroundStyle(.white).padding(6)
+                }
         case .file, .video:
             VStack(spacing: 6) {
                 Image(systemName: item.kind == .video ? "film" : "doc.fill").font(.system(size: 30)).foregroundStyle(.secondary)
@@ -122,7 +129,8 @@ struct ClipboardGridCard: View {
                 action("trash.slash", "Delete forever") { vm.delete(item) }
             } else {
                 action("doc.on.doc", "Copy") { vm.copyAndDismiss(item) }
-                action("pin", "Pin on top of screen") { vm.pin(item) }
+                if item.kind == .video, item.blobExt == "mp4" { action("text.badge.plus", "Copy as GitHub markdown (⌘⇧C)") { vm.copyMarkdown(item) } }
+                if item.kind != .video { action("pin", "Pin on top of screen") { vm.pin(item) } }
                 if vm.canFormat(item) { action("curlybraces", "Format & copy (JSON / SQL)") { vm.formatAndCopy(item) } }
                 if item.kind == .image {
                     action("pencil.and.outline", "Annotate / crop (⌘E)") { vm.beginEdit(item) }
@@ -188,6 +196,7 @@ struct ClipboardGridCard: View {
         let when = -item.createdAt.timeIntervalSinceNow < 10
             ? "just now"
             : item.createdAt.formatted(.relative(presentation: .numeric, unitsStyle: .abbreviated))
+        if item.kind == .video, item.byteSize > 0 { return "\(ByteCountFormatter.string(fromByteCount: item.byteSize, countStyle: .file)) · \(when)" }
         if item.kind == .image, item.pixelWidth > 0 { return "\(item.pixelWidth)×\(item.pixelHeight) · \(when)" }
         return when
     }

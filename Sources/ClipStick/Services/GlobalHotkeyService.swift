@@ -5,6 +5,8 @@ import Foundation
 final class GlobalHotkeyService {
     var onTrigger: (() -> Void)?
     var onPickColor: (() -> Void)?
+    var onRecord: (() -> Void)?
+    private var recordKeyRef: EventHotKeyRef?
     private var colorKeyRef: EventHotKeyRef?
     private(set) var label = ""
 
@@ -27,7 +29,7 @@ final class GlobalHotkeyService {
                 var id = EventHotKeyID()
                 GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil,
                                   MemoryLayout<EventHotKeyID>.size, nil, &id)
-                DispatchQueue.main.async { if id.id == 2 { service.onPickColor?() } else { service.onTrigger?() } }
+                DispatchQueue.main.async { switch id.id { case 2: service.onPickColor?(); case 3: service.onRecord?(); default: service.onTrigger?() } }
                 return noErr
             }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), &handlerRef)
         }
@@ -35,6 +37,11 @@ final class GlobalHotkeyService {
             var ref: EventHotKeyRef?
             let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 2)
             if RegisterEventHotKey(UInt32(kVK_ANSI_C), UInt32(optionKey), id, GetApplicationEventTarget(), 0, &ref) == noErr { colorKeyRef = ref }
+        }
+        if recordKeyRef == nil {
+            var ref: EventHotKeyRef?
+            let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 3)
+            if RegisterEventHotKey(UInt32(kVK_ANSI_R), UInt32(optionKey), id, GetApplicationEventTarget(), 0, &ref) == noErr { recordKeyRef = ref }
         }
         for c in Self.candidates {
             let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 1)

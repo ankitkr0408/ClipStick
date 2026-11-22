@@ -70,6 +70,7 @@ Access history, toggle folder screenshot watchers, pause capture, or configure b
 - **Auto-redact secrets**: One click in the editor's Privacy menu finds API keys (Anthropic, OpenAI, GitHub, AWS, Stripe…), JWTs, private keys, emails, phone numbers and `password=…` lines via on-device OCR and blacks them out.
 - **JSON / SQL formatter**: Messy JSON or one-line SQL on your clipboard gets a `{}` button on its card to copy a pretty-printed version, fully offline.
 - **Colour picker & palette**: Press `Option + C` anywhere (or use the eyedropper in the HUD) to copy any pixel's HEX; the palette button on a screenshot copies its 5 dominant colours. RGB and HSL are shown too.
+- **Record Bug Clip (GIF / MP4)**: Press `Option + R` (or *Record Bug Clip…* in the menu bar), drag over the area, and record up to 30 s with native ScreenCaptureKit. Stop with the pill or `Option + R` again. You get an MP4 plus a looping GIF (auto-shrunk toward 3 MB for clips up to 15 s) as a card in the HUD. `↩` copies the file; `⌘⇧C` copies GitHub markdown (`![bug](bug-….gif)`) together with the file, ready to paste or drop into an issue. Needs the Screen Recording permission, asked on first use.
 - **Pin to screen**: Pin any screenshot or text snippet as an always-on-top floating window for reference while you code.
 - **Copy for AI / Markdown Bundle**: Formats selected logs and screenshots into structured Markdown context ready for LLMs.
 - **Native Vision OCR**: Extracts text and code snippets from captured images in the background.

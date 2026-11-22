@@ -91,6 +91,22 @@ final class ClipboardWriter {
         return md
     }
 
+    /// `![bug](bug-….gif)` for GitHub issues, plus a nicely named copy of the file so it can be dropped/pasted into the issue.
+    func writeMarkdownEmbed(for item: ClipItem) {
+        guard let src = item.fileURLs.first, FileManager.default.fileExists(atPath: src.path) else { return }
+        let stamp = Self.stampFormatter.string(from: item.createdAt)
+        let name = "bug-\(stamp).\(src.pathExtension)"
+        let dest = makeExportDirectory().appendingPathComponent(name)
+        try? FileManager.default.copyItem(at: src, to: dest)
+        let md = NSPasteboardItem()
+        md.setString("![bug](\(name))", forType: .string)
+        commit([md, dest as NSURL])
+    }
+
+    private static let stampFormatter: DateFormatter = {
+        let f = DateFormatter(); f.dateFormat = "yyyyMMdd-HHmmss"; return f
+    }()
+
     // MARK: Export (drag & drop)
 
     func makeExportDirectory() -> URL {

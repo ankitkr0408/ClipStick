@@ -194,7 +194,7 @@ struct ClipboardBrowserView: View {
             HStack(spacing: 14) {
                 if let notice = vm.notice { Text(notice).foregroundStyle(.orange) }
                 else {
-                    hint("↩", "Copy"); hint("Click", "Image → edit"); hint("␣", "Select"); hint("⌘E", "Edit"); hint("⌘⌫", "Delete"); hint("esc", "Close")
+                    hint("↩", "Copy"); hint("Click", "Image → edit"); hint("␣", "Select"); hint("⌘E", "Edit"); hint("⌘⇧C", "Clip → Markdown"); hint("⌥R", "Record"); hint("⌘⌫", "Delete"); hint("esc", "Close")
                 }
                 Spacer()
                 Text("\(vm.filtered.count) clips").foregroundStyle(.tertiary)

@@ -126,6 +126,9 @@ final class IngestService: @unchecked Sendable {
         }
     }
 
+    /// Stores a finished screen recording (files are already in the blob/thumb stores).
+    func insertRecording(_ item: ClipItem) { queue.async { self.insert(item) } }
+
     // MARK: Helpers
 
     /// Same content already stored → move it to the top instead of duplicating.

@@ -30,6 +30,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let watchItem = NSMenuItem()
     private let ocrItem = NSMenuItem()
     private let showItem = NSMenuItem()
+    private let recordItem = NSMenuItem()
     private let loginItem = NSMenuItem()
     private let autoUpdateItem = NSMenuItem()
 
@@ -43,6 +44,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         showItem.action = #selector(show)
         showItem.target = self
         menu.addItem(showItem)
+        recordItem.action = #selector(toggleRecord)
+        recordItem.target = self
+        menu.addItem(recordItem)
         menu.addItem(.separator())
 
         for (mi, title, sel) in [
@@ -85,6 +89,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     func menuWillOpen(_ menu: NSMenu) {
         showItem.title = "Show ClipStick" + (app.hotkeyLabel.isEmpty ? "" : "    \(app.hotkeyLabel)")
+        recordItem.title = app.isRecording ? "Stop Recording    ⌥R" : "Record Bug Clip…    ⌥R"
         pauseItem.state = Preferences.capturePaused ? .on : .off
         watchItem.state = Preferences.watchScreenshots ? .on : .off
         ocrItem.state = Preferences.ocrEnabled ? .on : .off
@@ -92,6 +97,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         autoUpdateItem.state = Preferences.autoCheckUpdates ? .on : .off
     }
 
+    @objc private func toggleRecord() { app.toggleRecording() }
     @objc private func show() { app.showHUD() }
     @objc private func togglePause() { app.setPaused(!Preferences.capturePaused); updateIcon() }
     @objc private func toggleWatch() { app.setWatchScreenshots(!Preferences.watchScreenshots) }

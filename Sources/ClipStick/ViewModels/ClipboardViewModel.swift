@@ -124,6 +124,12 @@ final class ClipboardViewModel: ObservableObject {
         dismiss()
     }
 
+    func copyMarkdown(_ item: ClipItem) {
+        guard item.kind == .video else { return }
+        writer.writeMarkdownEmbed(for: item)
+        dismiss()
+    }
+
     func copyAll() {
         let list = selectedItems.isEmpty ? (focusedItem.map { [$0] } ?? []) : selectedItems
         guard !list.isEmpty else { return }
@@ -362,6 +368,9 @@ final class ClipboardViewModel: ObservableObject {
             return true
         case 0 where cmd && search.isEmpty: selectAll(); return true
         case 51 where cmd: deleteSelectionOrFocused(); return true
+        case 8 where mods == [.command, .shift]: // ⌘⇧C — GitHub markdown for a recorded clip
+            if let item = focusedItem, item.kind == .video { copyMarkdown(item) }
+            return true
         case 14 where cmd: // ⌘E
             if let item = focusedItem, item.kind == .image { beginEdit(item) }
             return true

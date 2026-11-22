@@ -4,8 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION="0.2.0"
-BUILD_NUMBER="2"
+VERSION="0.3.0"
+BUILD_NUMBER="3"
 APP="build/ClipStick.app"
 BIN="build/ClipStick"
 mkdir -p build downloads
@@ -58,6 +58,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>ClipStick records the screen area you select so you can turn it into a bug GIF or video.</string>
     <key>NSDesktopFolderUsageDescription</key>
     <string>ClipStick imports new screenshots saved to your Desktop so you can annotate and batch them.</string>
     <key>NSDocumentsFolderUsageDescription</key>

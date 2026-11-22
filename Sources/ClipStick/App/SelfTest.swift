@@ -1,4 +1,6 @@
 import AppKit
+import AVFoundation
+import ImageIO
 
 /// `ClipStick --selftest` — headless checks for storage, ingest/dedup, stitching, annotation rendering and OCR.
 @MainActor
@@ -107,6 +109,23 @@ enum SelfTest {
         check(UpdateService.isNewer("0.10.0", than: "0.9.0") && !UpdateService.isNewer("0.2.0", than: "0.2.0") && UpdateService.isNewer("1.0", than: "0.9.9"), "update version comparison")
         if let m = try? JSONDecoder().decode(UpdateService.Manifest.self, from: Data(#"{"version":"0.2.0","url":"https://github.com/x","sha256":"ab"}"#.utf8)) { check(m.version == "0.2.0", "manifest decodes") } else { check(false, "manifest decodes") }
 
+        // --- Recording pipeline (synthetic MP4 → GIF + poster)
+        let mp4 = FileManager.default.temporaryDirectory.appendingPathComponent("cs-test-\(UUID().uuidString).mp4")
+        let gif = mp4.deletingPathExtension().appendingPathExtension("gif")
+        defer { try? FileManager.default.removeItem(at: mp4); try? FileManager.default.removeItem(at: gif) }
+        if makeTestVideo(at: mp4, seconds: 2) {
+            var gifURL: URL?, poster: CGImage?
+            let sem = DispatchSemaphore(value: 0)
+            Task.detached { gifURL = await GIFEncoder.encode(video: mp4, output: gif); poster = await GIFEncoder.poster(video: mp4); sem.signal() }
+            while sem.wait(timeout: .now() + 0.05) == .timedOut { RunLoop.current.run(until: Date().addingTimeInterval(0.02)) }
+            let gifSize = gifURL.flatMap { try? $0.resourceValues(forKeys: [.fileSizeKey]).fileSize } ?? 0
+            check(gifURL != nil && gifSize > 0 && gifSize <= 3_000_000, "GIF encoded under 3 MB", "\(gifSize) bytes")
+            if let src = gifURL.flatMap({ CGImageSourceCreateWithURL($0 as CFURL, nil) }) {
+                check(CGImageSourceGetCount(src) >= 20, "GIF has ~12 fps frames", "\(CGImageSourceGetCount(src)) frames")
+            }
+            check(poster != nil && poster!.width > 0, "poster frame extracted")
+        } else { check(false, "synthetic test video written") }
+
         print(failures == 0 ? "\nAll self-tests passed." : "\n\(failures) self-test(s) FAILED.")
         return failures == 0 ? 0 : 1
     }
@@ -131,6 +150,36 @@ enum SelfTest {
         let o = y * ctx.bytesPerRow + x * 4
         // premultipliedFirst, little-endian host order handled by CGContext default: bytes are A R G B
         return (Int(p[o + 1]), Int(p[o + 2]), Int(p[o + 3]))
+    }
+
+    private static func makeTestVideo(at url: URL, seconds: Int) -> Bool {
+        let (w, h) = (400, 300)
+        guard let writer = try? AVAssetWriter(outputURL: url, fileType: .mp4) else { return false }
+        let input = AVAssetWriterInput(mediaType: .video, outputSettings: [AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: w, AVVideoHeightKey: h])
+        let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey as String: w, kCVPixelBufferHeightKey as String: h])
+        writer.add(input)
+        guard writer.startWriting() else { return false }
+        writer.startSession(atSourceTime: .zero)
+        for f in 0..<(seconds * 30) {
+            while !input.isReadyForMoreMediaData { Thread.sleep(forTimeInterval: 0.005) }
+            var pb: CVPixelBuffer?
+            CVPixelBufferCreate(nil, w, h, kCVPixelFormatType_32BGRA, nil, &pb)
+            guard let pb else { return false }
+            CVPixelBufferLockBaseAddress(pb, [])
+            if let ctx = CGContext(data: CVPixelBufferGetBaseAddress(pb), width: w, height: h, bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pb),
+                                   space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue) {
+                ctx.setFillColor(CGColor(gray: 0.1, alpha: 1)); ctx.fill(CGRect(x: 0, y: 0, width: w, height: h))
+                ctx.setFillColor(CGColor(srgbRed: 0.2, green: 0.6, blue: 1, alpha: 1)); ctx.fill(CGRect(x: f * 5 % 300, y: 100, width: 80, height: 80))
+            }
+            CVPixelBufferUnlockBaseAddress(pb, [])
+            adaptor.append(pb, withPresentationTime: CMTime(value: CMTimeValue(f), timescale: 30))
+        }
+        input.markAsFinished()
+        let sem = DispatchSemaphore(value: 0)
+        writer.finishWriting { sem.signal() }
+        sem.wait()
+        return writer.status == .completed
     }
 
     private static func textImage(_ lines: [String]) -> CGImage {
