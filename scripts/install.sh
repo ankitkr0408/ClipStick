@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
-# Builds ClipCoard, installs it to /Applications (or ~/Applications), and launches it.
+# Builds ClipStick, installs it to /Applications (or ~/Applications), and launches it.
 # On first launch from there it registers itself as a login item.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+
+# If piped through `curl | bash` or run from outside the repo, clone into a temp directory
+if [ ! -f "scripts/build.sh" ]; then
+    TMP_DIR=$(mktemp -d)
+    echo "Downloading ClipStick..."
+    git clone --depth 1 https://github.com/ankitkr0408/ClipStick.git "$TMP_DIR"
+    cd "$TMP_DIR"
+else
+    cd "$(dirname "$0")/.."
+fi
+
 ./scripts/build.sh
 
 DEST_DIR="/Applications"
