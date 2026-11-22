@@ -16,23 +16,37 @@ A complete reference guide covering every common scenario for both **non-technic
 
 ---
 
-### Scenario 1: macOS Security Warning ("Cannot verify developer")
+### Scenario 1: macOS Security Warning ("Cannot verify developer" / "Install.command Not Opened")
 
-#### Why this happens:
-ClipStick is a 100% free and open-source project. Apple displays a security prompt for open-source apps that are distributed outside the Mac App Store without a paid enterprise certificate.
+<p align="center">
+  <img src="assets/gatekeeper-warning.jpg" alt="macOS Gatekeeper Warning Dialog" width="550" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+</p>
 
-#### Non-Tech Solution (Mouse only — No Terminal):
-1. Go to your **Applications** folder in Finder.
-2. **Right-Click** (or hold `Control` and click) on **`ClipStick.app`**.
-3. Click **Open** from the menu.
-4. A dialog will appear asking if you want to open it. Click **Open**!
-5. *You only have to do this once. After this, it will open normally.*
+#### 🛡️ Is this safe? Why does macOS show this?
+- **This is 100% normal on macOS.**
+- Apple displays this standard Gatekeeper alert for **any** open-source software, script, or application downloaded from GitHub or the web that does not carry an Apple Developer Enterprise Notarization ticket ($99/year fee).
+- **Your privacy is completely protected:** ClipStick is **100% offline, local-only, and open-source**. It never connects to any external server, has zero analytics, and never uploads your clipboard or screenshots anywhere. You can audit every line of code directly on GitHub.
 
-> **Alternative via System Settings**: Go to **System Settings** → **Privacy & Security** → scroll down to the "Security" section → click **"Open Anyway"** next to ClipStick.
+#### 🚀 How to Open It (Choose any 1 method):
 
-#### Power User / Terminal Solution:
+##### 👉 Option A: The 2-Second Right-Click Trick (Recommended — No Terminal needed)
+1. In Finder, locate **`Install.command`** (or **`ClipStick.app`** in Applications).
+2. **Right-Click** (or hold the `Control` key and click, or tap with two fingers on your trackpad).
+3. Click **"Open"** from the top of the right-click menu.
+4. macOS will now present a modified prompt that includes an **"Open"** button.
+5. Click **"Open"**! It will immediately run and install. *(You only ever have to do this once)*.
+
+##### 👉 Option B: System Settings ("Open Anyway")
+1. Open **System Settings** (Apple menu  in the top-left corner → *System Settings*).
+2. Select **Privacy & Security** from the left sidebar.
+3. Scroll down to the **Security** section.
+4. You will see a notification: *`"Install.command" was blocked to protect your Mac`*.
+5. Click the **"Open Anyway"** button next to it and enter your Mac password or Touch ID.
+
+##### 👉 Option C: Terminal One-Liner (Power Users)
+If you prefer the command line, remove the quarantine flag in one command:
 ```bash
-xattr -cr /Applications/ClipStick.app
+xattr -cr ~/Downloads/ClipStick-main && ~/Downloads/ClipStick-main/Install.command
 ```
 
 ---
@@ -40,30 +54,37 @@ xattr -cr /Applications/ClipStick.app
 ### Scenario 2: "Where is the app? I can't find a window open!"
 
 #### Explanation:
-ClipStick is designed as a **lightweight menu bar utility** (like Spotlight or Raycast). It doesn't clutter your Dock with a permanent window.
+ClipStick is designed as a **lightweight, distraction-free menu bar utility** (like Spotlight or Raycast). It runs quietly in your background without keeping a persistent window open on your screen.
 
-#### How to use it:
-1. **Shortcut**: Press **`Option + Space`** (`⌥ Space`) anywhere on your Mac to toggle the floating clipboard HUD.
-2. **Menu Bar**: Look at the top-right menu bar near your Wi-Fi and Battery icons for the **clipboard icon**. Click it to access settings, toggle OCR, or view history.
+#### How to access and use it:
+1. **Global Shortcut**: Press **`Option + Space`** (`⌥ Space`) anywhere on your Mac to toggle the floating clipboard HUD.
+2. **Menu Bar Icon**: Look at the top-right menu bar near your Wi-Fi, Clock, and Battery icons for the **ClipStick clipboard icon**. Click it to toggle OCR, pause capturing, or view history.
 
 ---
 
 ### Scenario 3: "No developer tools found" / Xcode Compilation Error
 
-#### Error message in Terminal:
+<p align="center">
+  <img src="assets/terminal-xcode-error.jpg" alt="No developer tools error in Terminal" width="600" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+</p>
+
+#### Error text in Terminal:
 ```
+SwiftPM unavailable — compiling with swiftc
 xcode-select: note: No developer tools were found, requesting install.
 No usable macOS SDK found
 ```
 
 #### Why this happens:
-This occurs when a non-developer Mac user attempts to compile Swift source code without having Apple's Xcode Developer Tools installed.
+This happens when someone runs the build-from-source script on a Mac that doesn't have Apple's Command Line Developer Tools or Xcode installed.
 
 #### Solution:
-**You do not need to install Xcode!** Use our pre-built binary:
-1. Download the pre-compiled app directly:  
-   👉 **[Download ClipStick.zip (Pre-built)](https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/downloads/ClipStick.zip)**
-2. Unzip it and drag **`ClipStick.app`** to your **Applications** folder.
+**You do not need to install Xcode or any developer tools!**
+We provide a universal pre-compiled binary that runs directly on any Mac:
+1. Download the pre-built application:  
+   👉 **[Download ClipStick.zip (Universal Binary)](https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/downloads/ClipStick.zip)**
+2. Unzip it and drag **`ClipStick.app`** directly into your **Applications** folder.
+3. Open it using **Right-Click → Open** on first launch. That's it!
 
 ---
 
