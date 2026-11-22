@@ -59,6 +59,10 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(withTitle: "Open Data Folder", action: #selector(openData), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Clear History…", action: #selector(clearHistory), keyEquivalent: "").target = self
         menu.addItem(.separator())
+        menu.addItem(withTitle: "Help & Troubleshooting…", action: #selector(openHelp), keyEquivalent: "").target = self
+        menu.addItem(withTitle: "Report an Issue / Feedback…", action: #selector(openIssues), keyEquivalent: "").target = self
+        menu.addItem(withTitle: "About ClipStick", action: #selector(openAbout), keyEquivalent: "").target = self
+        menu.addItem(.separator())
         menu.addItem(withTitle: "Quit ClipStick", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
 
         item.menu = menu
@@ -88,4 +92,34 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     @objc private func toggleLogin() { app.setLaunchAtLogin(!app.launchAtLoginEnabled) }
     @objc private func openData() { app.openDataFolder() }
     @objc private func clearHistory() { app.confirmClearHistory() }
+
+    @objc private func openHelp() {
+        if let url = URL(string: "https://github.com/ankitkr0408/ClipStick/blob/main/SUPPORT_GUIDE.md") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc private func openIssues() {
+        if let url = URL(string: "https://github.com/ankitkr0408/ClipStick/issues") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc private func openAbout() {
+        let alert = NSAlert()
+        alert.messageText = "ClipStick v0.1.0"
+        alert.informativeText = "Lightweight, native macOS clipboard manager built for developers, designers, and thinkers.\n\n• 100% Offline & Local\n• Zero Tracking & Analytics\n• Open Source under MIT License\n\nGitHub: github.com/ankitkr0408/ClipStick"
+        alert.alertStyle = .informational
+        if let icon = NSApp.applicationIconImage ?? NSImage(named: "AppIcon") {
+            alert.icon = icon
+        }
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "View on GitHub")
+        let response = alert.runModal()
+        if response == .alertSecondButtonReturn {
+            if let url = URL(string: "https://github.com/ankitkr0408/ClipStick") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+    }
 }
