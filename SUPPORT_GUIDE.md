@@ -6,7 +6,7 @@ A complete reference guide covering every common scenario for both **non-technic
 
 ## 🧭 Quick Links
 
-- [Scenario 1: macOS Security Warning ("Cannot verify developer")](#scenario-1-macos-security-warning-cannot-verify-developer)
+- [Scenario 1: macOS Security Warning ("ClipStick Not Opened" / "Cannot verify developer")](#scenario-1-macos-security-warning-clipstick-not-opened--cannot-verify-developer)
 - [Scenario 2: "Where is the app? I can't find a window open!"](#scenario-2-where-is-the-app-i-cant-find-a-window-open)
 - [Scenario 3: "No developer tools found" / Xcode Compilation Error](#scenario-3-no-developer-tools-found--xcode-compilation-error)
 - [Scenario 4: Screenshots are not auto-importing](#scenario-4-screenshots-are-not-auto-importing)
@@ -16,10 +16,10 @@ A complete reference guide covering every common scenario for both **non-technic
 
 ---
 
-### Scenario 1: macOS Security Warning ("Cannot verify developer" / "Install.command Not Opened")
+### Scenario 1: macOS Security Warning ("ClipStick Not Opened" / "Cannot verify developer")
 
 <p align="center">
-  <img src="assets/gatekeeper-warning.jpg" alt="macOS Gatekeeper Warning Dialog" width="550" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <img src="assets/gatekeeper-warning.jpg" alt="macOS Gatekeeper Warning Dialog" width="420" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.25);">
 </p>
 
 #### 🛡️ Is this safe? Why does macOS show this?

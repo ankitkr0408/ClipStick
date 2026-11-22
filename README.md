@@ -23,7 +23,7 @@ A lightweight, native macOS clipboard manager built in Swift and SwiftUI, design
 </p>
 
 > [!TIP]
-> **First-Time macOS Warning?** If macOS shows *"Apple could not verify..."*, this is 100% normal for open-source Mac tools. Simply **Right-Click → Open** (or go to *System Settings → Privacy & Security → Open Anyway*). ClipStick is 100% local and offline. [See visual step-by-step instructions →](SUPPORT_GUIDE.md#scenario-1-macos-security-warning-cannot-verify-developer--installcommand-not-opened)
+> **First-Time macOS Warning?** If macOS shows *"Apple could not verify..."*, this is 100% normal for open-source Mac tools. Simply **Right-Click → Open** (or go to *System Settings → Privacy & Security → Open Anyway*). ClipStick is 100% local and offline. [See visual step-by-step instructions →](SUPPORT_GUIDE.md#scenario-1-macos-security-warning-clipstick-not-opened--cannot-verify-developer)
 
 ---
 
