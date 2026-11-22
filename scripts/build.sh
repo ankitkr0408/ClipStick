@@ -20,8 +20,19 @@ else
         fi
     done
     [ -n "$SDK" ] || { echo "No usable macOS SDK found"; exit 1; }
-    swiftc -O -sdk "$SDK" -swift-version 5 -parse-as-library -target "$(uname -m)-apple-macosx14.0" \
-        -o "$BIN" $(find Sources -name '*.swift') -lsqlite3
+    echo "Compiling for Apple Silicon (arm64)..."
+    swiftc -O -sdk "$SDK" -swift-version 5 -parse-as-library -target "arm64-apple-macosx14.0" \
+        -o "$BIN-arm64" $(find Sources -name '*.swift') -lsqlite3
+
+    if swiftc -O -sdk "$SDK" -swift-version 5 -parse-as-library -target "x86_64-apple-macosx14.0" \
+        -o "$BIN-x86_64" $(find Sources -name '*.swift') -lsqlite3 2>/dev/null; then
+        echo "Compiling for Intel (x86_64)..."
+        lipo -create -output "$BIN" "$BIN-arm64" "$BIN-x86_64"
+        rm -f "$BIN-arm64" "$BIN-x86_64"
+        echo "Created Universal Binary (Apple Silicon + Intel)"
+    else
+        mv "$BIN-arm64" "$BIN"
+    fi
 fi
 
 rm -rf "$APP"
