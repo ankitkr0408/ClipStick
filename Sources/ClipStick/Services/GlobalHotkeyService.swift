@@ -4,6 +4,8 @@ import Foundation
 /// System-wide hotkey via Carbon `RegisterEventHotKey` (needs no Accessibility permission).
 final class GlobalHotkeyService {
     var onTrigger: (() -> Void)?
+    var onPickColor: (() -> Void)?
+    private var colorKeyRef: EventHotKeyRef?
     private(set) var label = ""
 
     private var hotKeyRef: EventHotKeyRef?
@@ -19,12 +21,20 @@ final class GlobalHotkeyService {
     func register() -> Bool {
         if handlerRef == nil {
             var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
-            InstallEventHandler(GetApplicationEventTarget(), { _, _, userData in
+            InstallEventHandler(GetApplicationEventTarget(), { _, event, userData in
                 guard let userData else { return noErr }
                 let service = Unmanaged<GlobalHotkeyService>.fromOpaque(userData).takeUnretainedValue()
-                DispatchQueue.main.async { service.onTrigger?() }
+                var id = EventHotKeyID()
+                GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil,
+                                  MemoryLayout<EventHotKeyID>.size, nil, &id)
+                DispatchQueue.main.async { if id.id == 2 { service.onPickColor?() } else { service.onTrigger?() } }
                 return noErr
             }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), &handlerRef)
+        }
+        if colorKeyRef == nil {
+            var ref: EventHotKeyRef?
+            let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 2)
+            if RegisterEventHotKey(UInt32(kVK_ANSI_C), UInt32(optionKey), id, GetApplicationEventTarget(), 0, &ref) == noErr { colorKeyRef = ref }
         }
         for c in Self.candidates {
             let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 1)

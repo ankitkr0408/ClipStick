@@ -4,6 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+VERSION="0.2.0"
+BUILD_NUMBER="2"
 APP="build/ClipStick.app"
 BIN="build/ClipStick"
 mkdir -p build downloads
@@ -50,8 +52,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleIdentifier</key><string>dev.clipstick.app</string>
     <key>CFBundleExecutable</key><string>ClipStick</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleVersion</key><string>1</string>
-    <key>CFBundleShortVersionString</key><string>0.1.0</string>
+    <key>CFBundleVersion</key><string>$BUILD_NUMBER</string>
+    <key>CFBundleShortVersionString</key><string>$VERSION</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
@@ -63,6 +65,16 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </dict></plist>
 PLIST
 codesign --force --sign - "$APP" >/dev/null 2>&1 || true
-(cd build && zip -rq "ClipStick-v0.1.0-macOS.zip" "ClipStick.app")
-cp "build/ClipStick-v0.1.0-macOS.zip" "downloads/ClipStick.zip"
-echo "Built $APP, build/ClipStick-v0.1.0-macOS.zip, and downloads/ClipStick.zip"
+(cd build && rm -f "ClipStick-v$VERSION-macOS.zip" && zip -rq "ClipStick-v$VERSION-macOS.zip" "ClipStick.app")
+cp "build/ClipStick-v$VERSION-macOS.zip" "downloads/ClipStick.zip"
+# Update manifest read by the in-app "Check for Updates…" (commit + push it together with downloads/ClipStick.zip).
+SHA=$(shasum -a 256 downloads/ClipStick.zip | awk '{print $1}')
+cat > version.json <<JSON
+{
+  "version": "$VERSION",
+  "url": "https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/downloads/ClipStick.zip",
+  "sha256": "$SHA",
+  "notes": "${RELEASE_NOTES:-Bug fixes and improvements.}"
+}
+JSON
+echo "Built $APP, build/ClipStick-v$VERSION-macOS.zip, downloads/ClipStick.zip and version.json"

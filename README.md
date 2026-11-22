@@ -67,9 +67,13 @@ Access history, toggle folder screenshot watchers, pause capture, or configure b
   - **Redact**: Blackout sensitive API keys, passwords, or personal data before sharing.
   - **Crop**: Fast 8-handle crop box with rule-of-thirds grid.
   - **Annotations**: Highlight lines of code with markers, add arrows, boxes, and step counters.
+- **Auto-redact secrets**: One click in the editor's Privacy menu finds API keys (Anthropic, OpenAI, GitHub, AWS, Stripe…), JWTs, private keys, emails, phone numbers and `password=…` lines via on-device OCR and blacks them out.
+- **JSON / SQL formatter**: Messy JSON or one-line SQL on your clipboard gets a `{}` button on its card to copy a pretty-printed version, fully offline.
+- **Colour picker & palette**: Press `Option + C` anywhere (or use the eyedropper in the HUD) to copy any pixel's HEX; the palette button on a screenshot copies its 5 dominant colours. RGB and HSL are shown too.
+- **Pin to screen**: Pin any screenshot or text snippet as an always-on-top floating window for reference while you code.
 - **Copy for AI / Markdown Bundle**: Formats selected logs and screenshots into structured Markdown context ready for LLMs.
 - **Native Vision OCR**: Extracts text and code snippets from captured images in the background.
-- **100% Local & Private**: All data is stored in local SQLite and disk storage. Zero cloud sync, zero telemetry.
+- **100% Local & Private**: All data is stored in local SQLite and disk storage. Zero cloud sync, zero telemetry, updates only when you ask.
 - **Fluid & Resizable HUD**: Summon the floating panel anytime via hotkey (`Option + Space`), resize from the edges or bottom-right corner, and reposition via the drag handle.
 
 ---
@@ -83,6 +87,7 @@ Your clipboard contains your most sensitive data — passwords, credentials, per
 - **Zero Cloud Sync**: Nothing is ever uploaded to the cloud or external servers. Your clips never leave your Mac.
 - **Zero Telemetry or Analytics**: There are no tracking scripts, analytics SDKs, or background telemetry pings.
 - **Stored Exclusively on Your Machine**: Metadata and history live inside a local SQLite database on your Mac (`~/Library/Application Support/`), and images are cached locally on your disk.
+- **Updates are opt-in**: ClipStick only touches the network when you click **Check for Updates…** in the menu bar (or turn on *Check for Updates Automatically*, off by default). It sends a plain HTTPS request for `version.json` on GitHub — no identifiers, no analytics. Downloads are SHA-256 verified before the app replaces itself, and your history is kept.
 - **Works 100% Offline**: Turn off Wi-Fi completely — every feature (capture, search, markup, crop, OCR, and stitching) functions with zero internet access.
 - **Fully Open-Source & Auditable**: You don't have to take our word for it — the complete source code is public and transparent right here. Feel free to inspect the network calls (or lack thereof!).
 

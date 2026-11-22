@@ -122,8 +122,11 @@ struct ClipboardGridCard: View {
                 action("trash.slash", "Delete forever") { vm.delete(item) }
             } else {
                 action("doc.on.doc", "Copy") { vm.copyAndDismiss(item) }
+                action("pin", "Pin on top of screen") { vm.pin(item) }
+                if vm.canFormat(item) { action("curlybraces", "Format & copy (JSON / SQL)") { vm.formatAndCopy(item) } }
                 if item.kind == .image {
                     action("pencil.and.outline", "Annotate / crop (⌘E)") { vm.beginEdit(item) }
+                    action("paintpalette", "Copy colour palette (HEX)") { vm.copyPalette(item) }
                     if let ocr = item.ocrText, !ocr.isEmpty {
                         action("text.viewfinder", "Copy text from image (OCR)") { vm.copyOCR(item) }
                     }

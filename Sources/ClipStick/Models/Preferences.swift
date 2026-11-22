@@ -7,6 +7,7 @@ enum Preferences {
         static let ocr = "ocrOnCapture"
         static let stitchSpacing = "stitchDividerSpacing"
         static let maxItems = "maxHistoryItems"
+        static let autoUpdate = "autoCheckUpdates"
     }
 
     static func registerDefaults() {
@@ -29,6 +30,11 @@ enum Preferences {
     static var ocrEnabled: Bool {
         get { UserDefaults.standard.bool(forKey: Key.ocr) }
         set { UserDefaults.standard.set(newValue, forKey: Key.ocr) }
+    }
+    /// Off by default: ClipStick makes no network calls unless the user opts in or clicks "Check for Updates…".
+    static var autoCheckUpdates: Bool {
+        get { UserDefaults.standard.bool(forKey: Key.autoUpdate) }
+        set { UserDefaults.standard.set(newValue, forKey: Key.autoUpdate) }
     }
     static var stitchSpacing: Bool { UserDefaults.standard.bool(forKey: Key.stitchSpacing) }
     static var maxItems: Int { max(50, UserDefaults.standard.integer(forKey: Key.maxItems)) }

@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var status: StatusItemController!
     private let watcher = ScreenshotFolderWatcher()
     private let hotkey = GlobalHotkeyService()
+    private let updater = UpdateService()
 
     var hotkeyLabel: String { hotkey.label }
 
@@ -54,11 +55,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if Preferences.watchScreenshots { watcher.start() }
 
         hotkey.onTrigger = { [weak self] in self?.window.toggle() }
+        hotkey.onPickColor = { [weak self] in self?.vm.pickColor() }
         hotkey.register()
 
         status = StatusItemController(app: self)
         enableLaunchAtLoginOnFirstInstall()
+        updater.checkInBackgroundIfDue()
     }
+
+    func checkForUpdates() { Task { await updater.check(interactive: true) } }
 
     // MARK: Launch at login
 

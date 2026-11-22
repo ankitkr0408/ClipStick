@@ -141,6 +141,10 @@ struct ClipboardBrowserView: View {
                     .buttonStyle(.plain)
                 }
                 Spacer()
+                Button { vm.pickColor() } label: {
+                    Label("Pick colour", systemImage: "eyedropper").font(.system(size: 11, weight: .medium))
+                }
+                .buttonStyle(.plain).help("Pick any pixel on screen → copies HEX (⌥C anywhere)")
                 if vm.category == .trash, vm.filtered.count > 0 {
                     Button("Empty Trash", role: .destructive) { vm.emptyTrash() }
                         .controlSize(.small)

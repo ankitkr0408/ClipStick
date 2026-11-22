@@ -4,6 +4,28 @@ import Vision
 
 /// Apple Vision text recognition tuned for code / logs (no language correction, indentation reconstructed).
 enum OCRService {
+    /// Normalised (0…1, top-left origin) rectangles covering every secret Vision can read in the image.
+    static func secretRegions(in image: CGImage) -> [CGRect] {
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = false
+        guard (try? VNImageRequestHandler(cgImage: image, options: [:]).perform([request])) != nil,
+              let observations = request.results else { return [] }
+        var rects: [CGRect] = []
+        for o in observations {
+            guard let cand = o.topCandidates(1).first else { continue }
+            let text = cand.string
+            for range in SecretDetector.ranges(in: text) {
+                guard let box = try? cand.boundingBox(for: range)?.boundingBox else { continue }
+                // Vision is bottom-left origin; annotations are top-left. Pad slightly so glyph edges are covered.
+                let padX = 0.004, padY = box.height * 0.15
+                rects.append(CGRect(x: max(0, box.minX - padX), y: max(0, 1 - box.maxY - padY),
+                                    width: min(1, box.width + padX * 2), height: min(1, box.height + padY * 2)))
+            }
+        }
+        return rects
+    }
+
     static func recognize(_ image: CGImage) -> String? {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = ProcessInfo.processInfo.isLowPowerModeEnabled ? .fast : .accurate

@@ -71,5 +71,23 @@ final class AnnotationViewModel: ObservableObject {
         state = next
     }
 
+    /// OCRs the image and blacks out everything that looks like a secret. Returns how many regions were redacted.
+    @Published var statusMessage: String?
+
+    func autoRedact() {
+        statusMessage = "Scanning for secrets…"
+        let image = self.image
+        Task {
+            let rects = await Task.detached(priority: .userInitiated) { OCRService.secretRegions(in: image) }.value
+            guard !rects.isEmpty else { statusMessage = "No secrets found"; return }
+            var s = state
+            for r in rects {
+                s.annotations.append(Annotation(kind: .redact, color: .red, points: [CGPoint(x: r.minX, y: r.minY), CGPoint(x: r.maxX, y: r.maxY)]))
+            }
+            commit(s)
+            statusMessage = "Redacted \(rects.count) secret\(rects.count == 1 ? "" : "s")"
+        }
+    }
+
     func clearAll() { commit(EditState()) }
 }

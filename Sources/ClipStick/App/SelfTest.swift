@@ -90,6 +90,23 @@ enum SelfTest {
         let removed = storage.prune(maxItems: 1)
         check(removed.count == all.count - 1, "prune keeps newest N non-favourites", "removed \(removed.count)")
 
+        // --- Secrets / formatter / colour
+        check(SecretDetector.containsSecret("key = sk-ant-api03-abcdefghijklmnop"), "detects Anthropic key")
+        check(SecretDetector.containsSecret("token ghp_abcdefghijklmnopqrstuvwxyz1234"), "detects GitHub token")
+        check(SecretDetector.containsSecret("mail me: dev@example.com"), "detects email")
+        check(!SecretDetector.containsSecret("let x = items[42]"), "no false positive on plain code")
+        check(TextFormatter.prettyJSON("{\"a\":1,\"b\":[1,2]}")?.contains("\n") == true, "pretty-prints JSON")
+        check(TextFormatter.prettyJSON("not json") == nil, "ignores non-JSON")
+        check(TextFormatter.prettySQL("select a from t where b = 1")?.contains("\nFROM t") == true, "formats SQL")
+        let secretImg = textImage(["let x = 1", "API=sk-ant-api03-abcdefghijklmnop", "print(x)"])
+        let regions = OCRService.secretRegions(in: secretImg)
+        check(regions.count == 1 && regions[0].minY > 0.2 && regions[0].minY < 0.6, "OCR locates secret region", "\(regions)")
+        check(ColorService.hex(NSColor(srgbRed: 1, green: 0, blue: 0, alpha: 1)) == "#FF0000", "hex formatting")
+        check(ColorService.palette(from: red).first.map { ColorService.hex($0).hasPrefix("#F") } == true, "palette finds dominant colour")
+
+        check(UpdateService.isNewer("0.10.0", than: "0.9.0") && !UpdateService.isNewer("0.2.0", than: "0.2.0") && UpdateService.isNewer("1.0", than: "0.9.9"), "update version comparison")
+        if let m = try? JSONDecoder().decode(UpdateService.Manifest.self, from: Data(#"{"version":"0.2.0","url":"https://github.com/x","sha256":"ab"}"#.utf8)) { check(m.version == "0.2.0", "manifest decodes") } else { check(false, "manifest decodes") }
+
         print(failures == 0 ? "\nAll self-tests passed." : "\n\(failures) self-test(s) FAILED.")
         return failures == 0 ? 0 : 1
     }

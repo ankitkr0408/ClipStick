@@ -160,6 +160,46 @@ final class ClipboardViewModel: ObservableObject {
         }
     }
 
+    // MARK: Format / colour / pin
+
+    func canFormat(_ item: ClipItem) -> Bool {
+        [.text, .richText].contains(item.kind) && TextFormatter.format(item.text ?? "") != nil
+    }
+
+    func formatAndCopy(_ item: ClipItem) {
+        guard let formatted = TextFormatter.format(item.text ?? "") else { return }
+        writer.writeText(formatted)
+        dismiss()
+    }
+
+    func copyPalette(_ item: ClipItem) {
+        guard let name = item.blobName, let cg = ImageProcessingService.cgImage(at: storage.blobURL(name)) else { return }
+        let colors = ColorService.palette(from: cg)
+        guard !colors.isEmpty else { notice = "No colours found"; return }
+        writer.writeText(colors.map(ColorService.hex).joined(separator: "\n"))
+        notice = "Palette copied: " + colors.map(ColorService.hex).joined(separator: " ")
+    }
+
+    func pickColor() {
+        dismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            ColorService.pickFromScreen { color in
+                guard let self, let color else { return }
+                self.writer.writeText(ColorService.hex(color))
+                self.notice = "\(ColorService.hex(color))  ·  \(ColorService.rgb(color))  ·  \(ColorService.hsl(color))"
+            }
+        }
+    }
+
+    func pin(_ item: ClipItem) {
+        if item.kind == .image, let name = item.displayBlobName, let img = NSImage(contentsOf: storage.blobURL(name)) {
+            PinManager.shared.pin(image: img)
+        } else if let text = item.text ?? Optional(item.preview) {
+            PinManager.shared.pin(text: text)
+        }
+        dismiss()
+    }
+
     // MARK: Delete / favourite
 
     func deleteSelectionOrFocused() {

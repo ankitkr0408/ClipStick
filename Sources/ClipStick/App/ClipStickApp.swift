@@ -31,6 +31,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let ocrItem = NSMenuItem()
     private let showItem = NSMenuItem()
     private let loginItem = NSMenuItem()
+    private let autoUpdateItem = NSMenuItem()
 
     init(app: AppDelegate) {
         self.app = app
@@ -61,6 +62,11 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(withTitle: "Help & Troubleshooting…", action: #selector(openHelp), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Report an Issue / Feedback…", action: #selector(openIssues), keyEquivalent: "").target = self
+        menu.addItem(withTitle: "Check for Updates…", action: #selector(checkUpdates), keyEquivalent: "").target = self
+        autoUpdateItem.title = "Check for Updates Automatically"
+        autoUpdateItem.action = #selector(toggleAutoUpdate)
+        autoUpdateItem.target = self
+        menu.addItem(autoUpdateItem)
         menu.addItem(withTitle: "About ClipStick", action: #selector(openAbout), keyEquivalent: "").target = self
         menu.addItem(.separator())
         menu.addItem(withTitle: "Quit ClipStick", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -83,6 +89,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         watchItem.state = Preferences.watchScreenshots ? .on : .off
         ocrItem.state = Preferences.ocrEnabled ? .on : .off
         loginItem.state = app.launchAtLoginEnabled ? .on : .off
+        autoUpdateItem.state = Preferences.autoCheckUpdates ? .on : .off
     }
 
     @objc private func show() { app.showHUD() }
@@ -90,6 +97,8 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     @objc private func toggleWatch() { app.setWatchScreenshots(!Preferences.watchScreenshots) }
     @objc private func toggleOCR() { Preferences.ocrEnabled.toggle() }
     @objc private func toggleLogin() { app.setLaunchAtLogin(!app.launchAtLoginEnabled) }
+    @objc private func checkUpdates() { app.checkForUpdates() }
+    @objc private func toggleAutoUpdate() { Preferences.autoCheckUpdates.toggle() }
     @objc private func openData() { app.openDataFolder() }
     @objc private func clearHistory() { app.confirmClearHistory() }
 
@@ -107,7 +116,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     @objc private func openAbout() {
         let alert = NSAlert()
-        alert.messageText = "ClipStick v0.1.0"
+        alert.messageText = "ClipStick v\(UpdateService.currentVersion)"
         alert.informativeText = "Lightweight, native macOS clipboard manager built for developers, designers, and thinkers.\n\n• 100% Offline & Local\n• Zero Tracking & Analytics\n• Open Source under MIT License\n\nGitHub: github.com/ankitkr0408/ClipStick"
         alert.alertStyle = .informational
         if let icon = NSApp.applicationIconImage ?? NSImage(named: "AppIcon") {
