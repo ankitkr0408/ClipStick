@@ -14,6 +14,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let hotkey = GlobalHotkeyService()
     private let updater = UpdateService()
     private var recorder: RecordingController!
+    private var screenshotter: ScreenshotController!
 
     var hotkeyLabel: String { hotkey.label }
 
@@ -59,7 +60,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         recorder = RecordingController(storage: storage, ingest: ingest)
         recorder.onMessage = { [weak self] msg in self?.vm.notice = msg }
         recorder.onSaved = { [weak self] in self?.window.show() }
+        screenshotter = ScreenshotController(storage: storage, ingest: ingest)
+        screenshotter.onMessage = { [weak self] msg in self?.vm.notice = msg }
         hotkey.onRecord = { [weak self] in self?.recorder.toggle() }
+        hotkey.onScreenshot = { [weak self] in self?.screenshotter.capture() }
         hotkey.onPickColor = { [weak self] in self?.vm.pickColor() }
         hotkey.register()
 
@@ -69,6 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func toggleRecording() { recorder.toggle() }
+    func captureScreenshot() { screenshotter.capture() }
     var isRecording: Bool { recorder.isActive }
 
     func checkForUpdates() { Task { await updater.check(interactive: true) } }

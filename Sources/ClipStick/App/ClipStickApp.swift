@@ -30,6 +30,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let watchItem = NSMenuItem()
     private let ocrItem = NSMenuItem()
     private let showItem = NSMenuItem()
+    private let screenshotItem = NSMenuItem()
     private let recordItem = NSMenuItem()
     private let loginItem = NSMenuItem()
     private let autoUpdateItem = NSMenuItem()
@@ -44,6 +45,12 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         showItem.action = #selector(show)
         showItem.target = self
         menu.addItem(showItem)
+
+        screenshotItem.title = "Take Screenshot    ⌥S"
+        screenshotItem.action = #selector(takeScreenshot)
+        screenshotItem.target = self
+        menu.addItem(screenshotItem)
+
         recordItem.action = #selector(toggleRecord)
         recordItem.target = self
         menu.addItem(recordItem)
@@ -97,6 +104,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         autoUpdateItem.state = Preferences.autoCheckUpdates ? .on : .off
     }
 
+    @objc private func takeScreenshot() { app.captureScreenshot() }
     @objc private func toggleRecord() { app.toggleRecording() }
     @objc private func show() { app.showHUD() }
     @objc private func togglePause() { app.setPaused(!Preferences.capturePaused); updateIcon() }

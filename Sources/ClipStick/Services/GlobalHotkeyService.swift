@@ -6,8 +6,10 @@ final class GlobalHotkeyService {
     var onTrigger: (() -> Void)?
     var onPickColor: (() -> Void)?
     var onRecord: (() -> Void)?
+    var onScreenshot: (() -> Void)?
     private var recordKeyRef: EventHotKeyRef?
     private var colorKeyRef: EventHotKeyRef?
+    private var screenshotKeyRef: EventHotKeyRef?
     private(set) var label = ""
 
     private var hotKeyRef: EventHotKeyRef?
@@ -29,7 +31,14 @@ final class GlobalHotkeyService {
                 var id = EventHotKeyID()
                 GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil,
                                   MemoryLayout<EventHotKeyID>.size, nil, &id)
-                DispatchQueue.main.async { switch id.id { case 2: service.onPickColor?(); case 3: service.onRecord?(); default: service.onTrigger?() } }
+                DispatchQueue.main.async {
+                    switch id.id {
+                    case 2: service.onPickColor?()
+                    case 3: service.onRecord?()
+                    case 4: service.onScreenshot?()
+                    default: service.onTrigger?()
+                    }
+                }
                 return noErr
             }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), &handlerRef)
         }
@@ -42,6 +51,11 @@ final class GlobalHotkeyService {
             var ref: EventHotKeyRef?
             let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 3)
             if RegisterEventHotKey(UInt32(kVK_ANSI_R), UInt32(optionKey), id, GetApplicationEventTarget(), 0, &ref) == noErr { recordKeyRef = ref }
+        }
+        if screenshotKeyRef == nil {
+            var ref: EventHotKeyRef?
+            let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 4)
+            if RegisterEventHotKey(UInt32(kVK_ANSI_S), UInt32(optionKey), id, GetApplicationEventTarget(), 0, &ref) == noErr { screenshotKeyRef = ref }
         }
         for c in Self.candidates {
             let id = EventHotKeyID(signature: OSType(0x434C_4350), id: 1)
@@ -58,6 +72,12 @@ final class GlobalHotkeyService {
 
     func unregister() {
         if let hotKeyRef { UnregisterEventHotKey(hotKeyRef) }
+        if let colorKeyRef { UnregisterEventHotKey(colorKeyRef) }
+        if let recordKeyRef { UnregisterEventHotKey(recordKeyRef) }
+        if let screenshotKeyRef { UnregisterEventHotKey(screenshotKeyRef) }
         hotKeyRef = nil
+        colorKeyRef = nil
+        recordKeyRef = nil
+        screenshotKeyRef = nil
     }
 }

@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
   "url": "https://raw.githubusercontent.com/ankitkr0408/ClipStick/main/downloads/ClipStick.zip",
-  "sha256": "f22274d3dc1ef3e25881283812b44b4c803ac2274eeb88aacdf04b69a9dfc4d0",
-  "notes": "Record Bug Clip (⌥R) → GIF/MP4 with GitHub markdown copy, plus auto-redact, JSON/SQL formatter, colour picker, pin, cleaner toolbar."
+  "sha256": "cf01029fae9b182ddad71553e13ec93de167eebf6abafde4214925ba585f059d",
+  "notes": "Bug fixes and improvements."
 }

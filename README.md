@@ -149,7 +149,11 @@ cd ClipStick
 
 | Shortcut | Action |
 |---|---|
-| `Option + Space` | Toggle ClipStick overlay |
+| **`Option + S`** | **Take Area Screenshot** *(Instant, saves to clipboard & history — no 4-key gymnastics!)* |
+| **`Option + R`** | **Record Bug Clip** *(Area select → records 60fps video & GIF <3MB)* |
+| **`Option + C`** | **Pick Color** *(Any pixel HEX / RGB / HSL copy)* |
+| **`Option + Space`** | **Toggle ClipStick Overlay** |
+| `Cmd + Shift + C` | Copy Bug Clip as GitHub Markdown (`![bug](bug.gif)`) |
 | `Return` | Copy selected item to clipboard |
 | `Space` | Toggle item checkbox for batch actions |
 | `Cmd + E` | Open markup and crop editor |

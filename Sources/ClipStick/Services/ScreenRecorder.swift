@@ -133,4 +133,38 @@ final class ScreenRecorder: NSObject, SCStreamDelegate {
     nonisolated func stream(_ stream: SCStream, didStopWithError error: Error) {
         DispatchQueue.main.async { MainActor.assumeIsolated { self.onUnexpectedStop?() } }
     }
+
+    /// Captures a static screenshot of the given display rectangle using ScreenCaptureKit with fallback to CGWindowListCreateImage.
+    static func captureScreenshot(screen: NSScreen, rect: CGRect) async throws -> CGImage {
+        guard CGPreflightScreenCaptureAccess() || CGRequestScreenCaptureAccess() else {
+            throw RecorderError.permissionDenied
+        }
+        do {
+            let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+            let displayID = (screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value
+            guard let display = content.displays.first(where: { $0.displayID == displayID }) ?? content.displays.first else {
+                throw RecorderError.noDisplay
+            }
+            let own = content.applications.filter { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
+            let filter = SCContentFilter(display: display, excludingApplications: own, exceptingWindows: [])
+
+            let local = CGRect(x: rect.minX - screen.frame.minX, y: screen.frame.maxY - rect.maxY, width: rect.width, height: rect.height)
+            let scale = screen.backingScaleFactor
+            let config = SCStreamConfiguration()
+            config.sourceRect = local
+            config.width = max(2, Int(rect.width * scale))
+            config.height = max(2, Int(rect.height * scale))
+            config.showsCursor = false
+
+            return try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
+        } catch {
+            // Fallback to CGWindowListCreateImage
+            let localY = screen.frame.maxY - rect.maxY
+            let captureRect = CGRect(x: rect.minX, y: localY, width: rect.width, height: rect.height)
+            if let img = CGWindowListCreateImage(captureRect, .optionOnScreenOnly, kCGNullWindowID, .bestResolution) {
+                return img
+            }
+            throw error
+        }
+    }
 }
